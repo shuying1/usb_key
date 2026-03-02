@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网银盾在线管理系统</title>
+    <style>
+        /* 重置默认样式 */
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            position: relative;
+            color: black;
+            overflow: hidden;
+        }
+
+        /* 视频背景容器 */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+        }
+
+        /* 添加半透明遮罩层，提高文字可读性 */
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgb(6 81 245 / 11%);
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 50px);
+            align-items: center;
+            text-align: center;
+            padding: 5px;
+            position: relative;
+            z-index: 1;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            margin-top: 10px;
+        }
+
+        .logo-title-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 5px;
+            padding: 0;
+            position: relative;
+        }
+
+        .logo {
+            height: 80px;
+            width: auto;
+            border-radius: 8px;
+            align-self: flex-start;
+            margin-left: 20px;
+            margin-top: 5px;
+            z-index: 1;
+            object-fit: cover;
+        }
+
+        h1 {
+            width: 100%;
+            height: auto;
+            font-size: 58px;
+            text-align: center;
+            color: #3385FF;
+            text-shadow: 2px 2px 6px rgb(242, 247, 246);
+            margin: 20px 0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            margin: 100px auto;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .nav-btn {
+            padding: 16px 22px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #e6f0ff 0%, #d1e3ff 100%);
+            color: #2575fc;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: visible;
+            z-index: 1;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+            margin-top: 30px;
+        }
+
+        .nav-btn .permission-text {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+            color: #1a5fd8;
+        }
+
+        .nav-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* 需管理权限文本样式 */
+        .permission-text {
+            display: block;
+            font-size: 12px;
+            margin-top: 5px;
+            color: #888;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .logo {
+                height: 50px;
+            }
+
+            .nav-btn {
+                padding: 14px 20px;
+                font-size: 17px;
+                height: 55px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 26px;
+            }
+
+            .logo-title-container {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .nav-buttons {
+                gap: 10px;
+            }
+
+            .nav-btn {
+                padding: 13px 18px;
+                font-size: 16px;
+                height: 50px;
+            }
+        }
+
+        /* 添加动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header,
+        .nav-buttons {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .nav-buttons {
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        /* 添加底部版权信息 */
+        footer {
+            width: 100%;
+            text-align: center;
+            font-size: 22px;
+            z-index: 1;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+            position: absolute;
+            bottom: 0;
+            padding: 10px 0;
+            margin-top: 30px;
+        }
+
+        /* 新增区域管理看板样式 */
+        .region-dashboard {
+            width: 100%;
+            max-width: 1400px;
+            margin: 180px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            display: none;
+            position: relative;
+        }
+
+        .region-filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #e6f0ff 0%, #d1e3ff 100%);
+            border: 2px solid #3385FF;
+            border-radius: 25px;
+            color: #2575fc;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: linear-gradient(135deg, #3385FF 0%, #2575fc 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(51, 133, 255, 0.3);
+        }
+
+        .regions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            max-height: calc(100vh - 400px);
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            height: calc(100vh - 500px);
+        }
+
+        .region-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+            border-radius: 15px;
+            padding: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 2px solid #e1e8f0;
+            position: relative;
+            overflow: hidden;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transform-origin: center;
+        }
+
+        .region-card.hidden {
+            display: none !important;
+        }
+
+        .region-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3385FF, #2575fc, #1a5fd8);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .region-card:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .region-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(51, 133, 255, 0.3);
+            border-color: #3385FF;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            z-index: 2;
+        }
+
+        .region-card:active {
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        .region-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a5fd8;
+            margin: 0;
+            transition: color 0.3s ease;
+        }
+
+        .region-card:hover .region-name {
+            color: #0d47a1;
+        }
+
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .regions-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 10px;
+            }
+
+            .region-card {
+                height: 70px;
+                padding: 8px 5px;
+            }
+
+            .region-name {
+                font-size: 14px;
+            }
+
+            .filter-btn {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+
+            .search-input {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .regions-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 8px;
+            }
+
+            .region-card {
+                height: 65px;
+                padding: 6px 4px;
+            }
+
+            .region-name {
+                font-size: 13px;
+            }
+
+            .dashboard-title {
+                font-size: 24px;
+            }
+
+            .filter-btn {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+            
+            .nav-btn {
+                padding: 12px 16px;
+                font-size: 16px;
+                height: 60px;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .region-card {
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+       
+
+        /* 返回按钮 */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #e6f0ff 0%, #d1e3ff 100%);
+            border: none;
+            border-radius: 25px;
+            color: #2575fc;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(51, 133, 255, 0.3);
+            background: linear-gradient(135deg, #3385FF 0%, #2575fc 100%);
+            color: white;
+        }
+        
+        /* 图片错误处理 */
+        img.onerror {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+        
+        img.onerror::before {
+            content: "图片无法加载";
+            display: block;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 视频背景 -->
+    <div class="video-background">
+        <video autoplay muted loop>
+            <source
+                src="https://hr-fly.chinaconch.com/hbp-filehub-web/download/bucket-hub/ce3be04a/4be22ca0af1240649f1ecb19f9f05990.mp4"
+                type="video/mp4">
+            <source
+                src="./videos/background.mp4"
+                type="video/mp4">
+            您的浏览器不支持视频背景功能。
+        </video>
+    </div>
+
+    <!-- 半透明覆盖层 -->
+    <div class="video-overlay"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo-title-container">
+                <img class="logo" src="./images/logo.png" alt="系统Logo" onerror="this.className='onerror';"/>
+                <h1>网银盾在线管理系统</h1>
+            </div>
+        </header>
+
+        <div class="nav-buttons">
+            <button class="nav-btn "
+                onclick="openLink('https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0H6NUe57s7zYg&')">
+                子公司登记
+            </button>
+            <button class="nav-btn" onclick="showRegionDashboard()">
+                区域管理看板
+            </button>
+            <button class="nav-btn" onclick="openLink('https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0H6NUe57s7zYg&')">
+                股份控制中台<br />
+                <span class="permission-text">需管理权限</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 区域管理看板 -->
+    <div class="region-dashboard" id="regionDashboard">
+        <div class="region-filters" style="margin: 20px 0 15px;">
+            <button class="filter-btn active" data-group="all">全部区域</button>
+            <button class="filter-btn" data-group="domestic">国内区域</button>
+            <button class="filter-btn" data-group="overseas">海外区域</button>
+            <button class="filter-btn" data-group="business">多元化公司</button>
+        </div>
+
+        <div class="regions-grid" id="regionsGrid">
+            <!-- 区域卡片将在JS中动态生成 -->
+        </div>
+    </div>
+
+    <footer>
+        &copy; <span id="current-year"></span> 安徽海螺财务服务有限公司 版权所有
+    </footer>
+
+    <script>
+        // 设置当前年份
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // 区域数据配置
+        const regionData = [
+            // 国内区域
+            { name: "省内公司", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G05uzrTYGAmgER&", group: "domestic" },
+            { name: "皖北区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0Aq1Bnx5GRkZE&", group: "domestic" },
+            { name: "上海区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0Em7Y9C9WCxnv&", group: "domestic" },
+            { name: "浙江区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0NW5shX17rhWF&", group: "domestic" },
+            { name: "江苏区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G06rmVrEFD1wg1&", group: "domestic" },
+            { name: "江西区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0cT3PXyyZ8B1g&", group: "domestic" },
+            { name: "湖南区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0gpmc84twz55u&", group: "domestic" },
+            { name: "广东区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0BeZcD4kAWmkw&", group: "domestic" },
+            { name: "广西区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0ckrD2Gnf4tD7&", group: "domestic" },
+            { name: "川渝区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0gsHeGbeGVEeX&", group: "domestic" },
+            { name: "陕甘区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0NKz2CWpXKgZX&", group: "domestic" },
+            { name: "贵州区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0qAkc2r5NeyQt&", group: "domestic" },
+            { name: "云南区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0S6dwsU72Vy2M&", group: "domestic" },
+
+            // 全业务平台
+            { name: "塑品公司", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G055AKFGPFMb1E&", group: "business" },
+            { name: "他业公司", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0vacuSy2GXXbp&", group: "business" },
+            { name: "新能源", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0pHkqxMEvFCZ8&", group: "business" },
+          
+
+            // 海外区域
+            { name: "缅甸区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0yfr353y7AmAk&", group: "overseas" },
+            { name: "印尼区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0QzbqUpSv7kUg&", group: "overseas" },
+            { name: "乌兹区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0Cu5rRycGSmuC&", group: "overseas" },
+            { name: "老挝区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0T2feKaPsGRA9&", group: "overseas" },
+            { name: "柬埔寨区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0qQuNr44E9aQD&", group: "overseas" }
+        ];
+
+        // 初始化区域卡片
+        function initializeRegionCards() {
+            const regionsGrid = document.getElementById('regionsGrid');
+            regionsGrid.innerHTML = '';
+
+            // 创建一个文档片段来批量添加卡片
+            const fragment = document.createDocumentFragment();
+
+            regionData.forEach((region, index) => {
+                const card = document.createElement('div');
+                card.className = 'region-card';
+                card.setAttribute('data-group', region.group);
+                card.setAttribute('data-url', region.url);
+                card.setAttribute('data-name', region.name);
+                card.innerHTML = `
+                    <h3 class="region-name">${region.name}</h3>
+                `;
+
+                // 使用事件委托替代直接绑定事件，提高性能
+                // card.addEventListener('click', () => openRegion(region.url));
+                addRippleEffect(card);
+
+                // 将卡片添加到文档片段中
+                fragment.appendChild(card);
+            });
+
+            // 将文档片段一次性添加到 DOM 中
+            regionsGrid.appendChild(fragment);
+        }
+
+        // 为区域网格添加事件委托
+        document.getElementById('regionsGrid').addEventListener('click', function(e) {
+            // 查找点击的元素或其父级是否为区域卡片
+            let target = e.target;
+            while(target && target !== this) {
+                if(target.classList.contains('region-card')) {
+                    const url = target.getAttribute('data-url');
+                    openRegion(url);
+                    break;
+                }
+                target = target.parentElement;
+            }
+        });
+
+        // 显示区域管理看板
+        function showRegionDashboard() {
+            document.querySelector('.container').style.display = 'none';
+            document.querySelector('.region-dashboard').style.display = 'block';
+            document.querySelector('.back-btn').style.display = 'block';
+            
+            // 初始化卡片之前，先设置默认选中"全部区域"
+            initializeRegionCards();
+            
+            // 获取所有过滤按钮并设置"全部区域"为活跃状态
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 默认激活"全部区域"按钮
+            const allFilterBtn = document.querySelector('.filter-btn[data-group="all"]');
+            if(allFilterBtn) {
+                allFilterBtn.classList.add('active');
+            }
+            
+            // 同时显示所有区域
+            filterRegions('all');
+        }
+
+        // 隐藏区域管理看板
+        function hideRegionDashboard() {
+            document.querySelector('.container').style.display = 'flex';
+            document.querySelector('.region-dashboard').style.display = 'none';
+            document.querySelector('.back-btn').style.display = 'none';
+        }
+
+        // 区域过滤功能
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+
+                const group = this.getAttribute('data-group');
+                filterRegions(group);
+            });
+        });
+
+        // 优化 filterRegions 函数
+        function filterRegions(group) {
+            const cards = document.querySelectorAll('.region-card');
+            let hiddenCount = 0;
+
+            // 使用一个数组来存储需要隐藏或显示的卡片
+            const actions = [];
+
+            cards.forEach(card => {
+                if (group === 'all' || card.getAttribute('data-group') === group) {
+                    actions.push({ element: card, action: 'show' });
+                } else {
+                    actions.push({ element: card, action: 'hide' });
+                }
+            });
+
+            // 批量执行显示或隐藏操作
+            actions.forEach(action => {
+                if (action.action === 'show') {
+                    action.element.classList.remove('hidden');
+                } else {
+                    action.element.classList.add('hidden');
+                }
+            });
+        }
+
+
+        // 打开区域链接
+        function openRegion(url) {
+            if (!url) {
+                alert('该区域链接暂未配置');
+                return;
+            }
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+
+        // 为元素添加涟漪效果
+        function addRippleEffect(element) {
+            // 检查元素是否已经有涟漪事件监听器
+            if(element.hasAttribute('data-ripple-bound')) {
+                return;
+            }
+            
+            element.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(51, 133, 255, 0.3);
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                    width: ${size}px;
+                    height: ${size}px;
+                    top: ${y}px;
+                    left: ${x}px;
+                    z-index: 0;
+                `;
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+            
+            // 标记元素已经绑定了涟漪效果
+            element.setAttribute('data-ripple-bound', 'true');
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加涟漪动画样式
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // 添加返回按钮
+            const backButton = document.createElement('button');
+            backButton.className = 'back-btn';
+            backButton.textContent = '返回主菜单';
+            backButton.onclick = function() {
+                hideRegionDashboard();
+            };
+            document.body.appendChild(backButton);
+        });
+
+        // 在新标签页中打开链接
+        function openLink(url) {
+            if (!url) {
+                console.error('URL is required');
+                return;
+            }
+
+            try {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            } catch (error) {
+                console.error('Failed to open link:', error);
+            }
+        }
+    </script>
+</body>
+</html>
