@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
+    <meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>网银盾在线管理系统</title>
@@ -414,7 +416,7 @@
                 padding: 4px 8px;
                 font-size: 12px;
             }
-            
+
             .nav-btn {
                 padding: 12px 16px;
                 font-size: 16px;
@@ -440,7 +442,7 @@
             opacity: 0;
         }
 
-       
+
 
         /* 返回按钮 */
         .back-btn {
@@ -466,7 +468,7 @@
             background: linear-gradient(135deg, #3385FF 0%, #2575fc 100%);
             color: white;
         }
-        
+
         /* 图片错误处理 */
         img.onerror {
             display: flex;
@@ -475,7 +477,7 @@
             background: #f0f0f0;
             border: 1px solid #ddd;
         }
-        
+
         img.onerror::before {
             content: "图片无法加载";
             display: block;
@@ -493,9 +495,7 @@
             <source
                 src="https://hr-fly.chinaconch.com/hbp-filehub-web/download/bucket-hub/ce3be04a/4be22ca0af1240649f1ecb19f9f05990.mp4"
                 type="video/mp4">
-            <source
-                src="./videos/background.mp4"
-                type="video/mp4">
+            <source src="./videos/background.mp4" type="video/mp4">
             您的浏览器不支持视频背景功能。
         </video>
     </div>
@@ -506,7 +506,10 @@
     <div class="container">
         <header>
             <div class="logo-title-container">
-                <img class="logo" src="./images/logo.png" alt="系统Logo" onerror="this.className='onerror';"/>
+                <!-- <img class="logo" src="./images/logo.png" alt="系统Logo" onerror="this.className='onerror';"/> -->
+                <img class="logo"
+                    src="https://cdn.nlark.com/yuque/0/2026/png/12676018/1767599316566-15aefeeb-f8ef-4007-9f22-deb05ac7fea3.png"
+                    alt="系统Logo" />
                 <h1>网银盾在线管理系统</h1>
             </div>
         </header>
@@ -519,7 +522,12 @@
             <button class="nav-btn" onclick="showRegionDashboard()">
                 区域管理看板
             </button>
-            <button class="nav-btn" onclick="openLink('https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0C9EYcTdQDg1t&')">
+            <button class="nav-btn "
+                onclick="openLink('https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=D0K7nuD1gYBySz')">
+                股份管理看板
+            </button>
+            <button class="nav-btn"
+                onclick="openLink('https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0C9EYcTdQDg1t&')">
                 股份控制中台<br />
                 <span class="permission-text">需管理权限</span>
             </button>
@@ -569,7 +577,7 @@
             { name: "塑品公司", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G055AKFGPFMb1E&", group: "business" },
             { name: "他业公司", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0vacuSy2GXXbp&", group: "business" },
             { name: "新能源", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0pHkqxMEvFCZ8&", group: "business" },
-          
+
 
             // 海外区域
             { name: "缅甸区域", url: "https://im.yungongplat.com/weboffice/office/d/366463639568384?share_id=G0yfr353y7AmAk&", group: "overseas" },
@@ -610,11 +618,11 @@
         }
 
         // 为区域网格添加事件委托
-        document.getElementById('regionsGrid').addEventListener('click', function(e) {
+        document.getElementById('regionsGrid').addEventListener('click', function (e) {
             // 查找点击的元素或其父级是否为区域卡片
             let target = e.target;
-            while(target && target !== this) {
-                if(target.classList.contains('region-card')) {
+            while (target && target !== this) {
+                if (target.classList.contains('region-card')) {
                     const url = target.getAttribute('data-url');
                     openRegion(url);
                     break;
@@ -628,21 +636,21 @@
             document.querySelector('.container').style.display = 'none';
             document.querySelector('.region-dashboard').style.display = 'block';
             document.querySelector('.back-btn').style.display = 'block';
-            
+
             // 初始化卡片之前，先设置默认选中"全部区域"
             initializeRegionCards();
-            
+
             // 获取所有过滤按钮并设置"全部区域"为活跃状态
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            
+
             // 默认激活"全部区域"按钮
             const allFilterBtn = document.querySelector('.filter-btn[data-group="all"]');
-            if(allFilterBtn) {
+            if (allFilterBtn) {
                 allFilterBtn.classList.add('active');
             }
-            
+
             // 同时显示所有区域
             filterRegions('all');
         }
@@ -656,7 +664,7 @@
 
         // 区域过滤功能
         document.querySelectorAll('.filter-btn').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 document.querySelectorAll('.filter-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
@@ -706,11 +714,11 @@
         // 为元素添加涟漪效果
         function addRippleEffect(element) {
             // 检查元素是否已经有涟漪事件监听器
-            if(element.hasAttribute('data-ripple-bound')) {
+            if (element.hasAttribute('data-ripple-bound')) {
                 return;
             }
-            
-            element.addEventListener('click', function(e) {
+
+            element.addEventListener('click', function (e) {
                 const ripple = document.createElement('span');
                 const rect = this.getBoundingClientRect();
                 const size = Math.max(rect.width, rect.height);
@@ -736,13 +744,13 @@
                     ripple.remove();
                 }, 600);
             });
-            
+
             // 标记元素已经绑定了涟漪效果
             element.setAttribute('data-ripple-bound', 'true');
         }
 
         // 页面加载时初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 添加涟漪动画样式
             const style = document.createElement('style');
             style.textContent = `
@@ -759,7 +767,7 @@
             const backButton = document.createElement('button');
             backButton.className = 'back-btn';
             backButton.textContent = '返回主菜单';
-            backButton.onclick = function() {
+            backButton.onclick = function () {
                 hideRegionDashboard();
             };
             document.body.appendChild(backButton);
@@ -780,4 +788,5 @@
         }
     </script>
 </body>
+
 </html>
